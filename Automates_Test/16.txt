@@ -1,0 +1,12 @@
+etats: 0, 1, 2, 3, 4
+initial: 1
+finaux: 0
+transitions:
+1, a, 1
+1, a, 2
+2, b, 2
+2, b, 3
+3, c, 3
+3, c, 4
+4, d, 4
+4, d, 5
