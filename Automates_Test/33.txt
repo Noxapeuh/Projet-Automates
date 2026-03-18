@@ -1,0 +1,22 @@
+etats: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+initial: 0
+finaux: 12
+transitions:
+0, eps, 1
+0, eps, 7
+1, eps, 2
+1, eps, 4
+2, a, 3
+3, eps, 5
+4, b, 4
+4, eps, 5
+5, c, 6
+6, eps, 12
+7, eps 8
+7, eps, 9
+8, a, 8
+8, eps, 11
+9, b, 10
+10, eps, 11
+11, c, 11
+11, eps, 12

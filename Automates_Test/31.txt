@@ -1,0 +1,16 @@
+etats: 0, 1, 2, 3, 4, 5, 6, 7
+initial: 1
+finaux: 7
+transitions:
+0, eps, 1
+0, eps, 4
+1, a, 2
+1, eps, 3
+2, b, 1
+2, a, 3
+b, 3, b
+3, eps, 7
+4, b, 5
+5, b, 6
+6, eps, 4
+6, eps, 7
