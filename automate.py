@@ -25,7 +25,7 @@ class Automate:
             print()
 
         
-    def est_determinisite(self):
+    def est_deterministe(self):
         if len(self.initial) != 1:
             return False
 
