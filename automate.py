@@ -18,13 +18,13 @@ class Automate:
             print()
 
         
-        def est_determinsite(self):
-            if len(self.initial) != 1:
-                return False
-            
-            for i in range(len(self.etat)):
-                for j in range(len(self.etat)):
-                    if len(self.transition[i][j]) != 1:
-                        return False
-                        
-            return True
+    def est_determinsite(self):
+        if len(self.initial) != 1:
+            return False
+
+        for i in range(len(self.etats)):
+            for j in range(len(self.etats)):
+                if len(self.transitions[i][j]) != 1:
+                    return False
+
+        return True
