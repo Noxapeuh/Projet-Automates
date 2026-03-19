@@ -19,12 +19,12 @@ class Automate:
 
         
         def est_determinsite(self):
-            if len(self.initial)=!1:
-                return FALSE
+            if len(self.initial) != 1:
+                return False
             
             for i in range(len(self.etat)):
                 for j in range(len(self.etat)):
-                    if len(self.transition[i][j])=!1:
-                        return FALSE
+                    if len(self.transition[i][j]) != 1:
+                        return False
                         
-            return TRUE
+            return True
