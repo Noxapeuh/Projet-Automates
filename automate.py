@@ -4,6 +4,8 @@ class Automate:
         self.initial = []
         self.final = []
         self.transitions = []
+        self.est_deterministe = None
+        self.est_minimaliste = None
 
 
     # Fonction : Affiche la table des transitions de l'automate
@@ -18,7 +20,7 @@ class Automate:
             print()
 
         
-    def est_determinsite(self):
+    def est_determinisite(self):
         if len(self.initial) != 1:
             return False
 
