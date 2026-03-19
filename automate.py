@@ -10,6 +10,11 @@ class Automate:
 
     # Fonction : Affiche la table des transitions de l'automate
     def afficher_automate(self):
+        print("Tous les états de l'automate :")
+        for i in self.etats:
+            print(i, end=", ")
+        print()
+
         print("Table des transitions :")
         print("\t" + str(self.etats))
         print(5 * "\t-")

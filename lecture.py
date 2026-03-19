@@ -14,7 +14,7 @@ def lire_automate(fichier):
         for i in range(0, len(temp), 3):
             automate.initial.append(temp[i])
 
-        # Transforme la ligne des états en une liste du type ['0', '1', '2']
+        # Transforme la ligne des états finaux en une liste du type ['1', '2']
         temp = f.readline().split(':')[-1].strip()
         for i in range(0, len(temp), 3):
             automate.final.append(temp[i])
