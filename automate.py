@@ -1,39 +1,29 @@
+# classe qui represente un automate
 class Automate:
-    # ============================================================================================
-    # Fonction : __init__
-    # Role : Constructeur de la classe Automate. Initialise tous les attributs d'un automate vide.
-    # Parametres : Aucun (self uniquement)
-    # ============================================================================================
+    # constructeur : on initialise tout a vide
     def __init__(self):
-        self.etats = []          # Liste des états de l'automate (ex: ['0', '1', '2'])
-        self.initial = []        # Liste des états initiaux (ex: ['0'])
-        self.final = []          # Liste des états finaux/terminaux (ex: ['1', '2'])
-        self.transitions = []    # Matrice NxN : transitions[i][j] = liste des symboles pour aller de i à j
-        self.alphabet = []       # Alphabet de l'automate (ex: ['a', 'b']), déduit des transitions
-        self.correspondance = {} # Dictionnaire de correspondance des états (utilisé après déterminisation/minimisation)
+        self.etats = []          # liste des etats
+        self.initial = []        # liste des etats initiaux
+        self.final = []          # liste des etats finaux
+        self.transitions = []    # matrice de transitions
+        self.alphabet = []       # alphabet de l'automate
+        self.correspondance = {} # correspondance des etats apres determinisation/minimisation
 
-    # ============================================================================================
-    # Fonction : get_alphabet
-    # Role : Parcourt toute la matrice de transitions pour en extraire l'alphabet (les symboles
-    #        utilisés dans les transitions). Les epsilon-transitions ('eps') ne font PAS partie
-    #        de l'alphabet. Le résultat est trié par ordre alphabétique.
-    # Parametres : Aucun (self uniquement)
-    # ============================================================================================
+    # fonction qui calcule l'alphabet a partir des transitions
     def get_alphabet(self):
-        alphabet = set()  # On utilise un set pour éviter les doublons automatiquement
+        alphabet = []
         nb_etats = len(self.etats)
 
-        # On parcourt chaque case de la matrice de transitions
-        # Boucle i : parcourt les lignes (état de départ)
-        # Boucle j : parcourt les colonnes (état d'arrivée)
+        # on parcourt toute la matrice de transitions
         for i in range(nb_etats):
             for j in range(nb_etats):
-                # Pour chaque symbole présent dans la case transitions[i][j]
+                # pour chaque symbole dans la case [i][j]
                 for symbole in self.transitions[i][j]:
-                    # On n'ajoute pas epsilon à l'alphabet car ce n'est pas un vrai symbole
-                    if symbole != 'eps':
-                        alphabet.add(symbole)
+                    # on n'ajoute pas epsilon et on evite les doublons
+                    if symbole != 'eps' and symbole not in alphabet:
+                        alphabet.append(symbole)
 
-        # On trie l'alphabet pour avoir un ordre cohérent (a, b, c, ...)
-        self.alphabet = sorted(list(alphabet))
+        # on trie l'alphabet
+        alphabet.sort()
+        self.alphabet = alphabet
         return self.alphabet

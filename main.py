@@ -16,7 +16,7 @@ def afficher_menu_principal():
     print("   PROJET AUTOMATES FINIS - EFREI P2 2025/2026")
     print("=" * 60)
     print("  1. Choisir un automate")
-    print("  0. Quitter")
+    print("  9. Quitter")
     print("-" * 60)
 
 
@@ -52,7 +52,7 @@ def afficher_menu_automate(numero_automate, est_deterministe_flag, est_standard_
     print("  6. Automate complementaire")
     print("  7. Sauvegarder l'automate")
     print("  8. Choisir un autre automate")
-    print("  0. Quitter")
+    print("  9. Quitter")
     print("-" * 60)
 
 
@@ -133,12 +133,12 @@ def verifier_proprietes(automate):
 # ============================================================================================
 def main():
     # --- Boucle principale du programme ---
-    # La boucle tourne jusqu'à ce que l'utilisateur choisisse de quitter (option 0)
+    # La boucle tourne jusqu'à ce que l'utilisateur choisisse de quitter (option 9)
     while True:
         afficher_menu_principal()
         choix = input("Votre choix : ").strip()
 
-        if choix == '0':
+        if choix == '9':
             print("Au revoir !")
             break
         elif choix == '1':
@@ -168,7 +168,10 @@ def main():
             est_minimise = False
 
             # Appel au menu_automate() pour gérer les opérations sur cet automate
-            menu_automate(numero_automate, automate_original, automate_courant, est_minimise)
+            quitter = menu_automate(numero_automate, automate_original, automate_courant, est_minimise)
+            if quitter:
+                print("Au revoir !")
+                break
         else:
             print("Choix invalide.")
 
@@ -326,12 +329,13 @@ def menu_automate(numero_automate, automate_original, automate_courant, est_mini
             # On sort du menu automate pour revenir au menu principal
             break
 
-        # === Option 0 : Quitter ===
-        elif choix == '0':
-            print("Au revoir !")
-            exit(0)  # On quitte complètement le programme
+        # === Option 9 : Quitter ===
+        elif choix == '9':
+            return True  # On signale au menu principal qu'il faut quitter
         else:
             print("Choix invalide.")
+
+    return False  # Retour au menu principal sans quitter
 
 
 # Point d'entrée du programme
