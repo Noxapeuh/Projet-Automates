@@ -31,7 +31,6 @@ On peut :
 ├── lecture.py           # Lecture/écriture des fichiers .txt
 ├── manipulation.py      # Toutes les opérations sur les automates
 ├── main.py              # Menu interactif (point d'entrée)
-├── test_all.py          # Script de test sur tous les automates
 └── Automates_Test/      # Les 44 automates de test + sauvegardes
     ├── 01.txt
     ├── 02.txt
