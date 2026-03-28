@@ -6,38 +6,29 @@ import copy
 import os
 
 
-# ============================================================================================
-# Fonction : afficher_menu_principal
-# Role : Affiche le menu principal qui permet de choisir un automate ou de quitter le programme.
-# Parametres : Aucun
-# ============================================================================================
+# fonction : afficher_menu_principal
+# role : affiche le menu principal qui permet de choisir un automate ou de quitter le programme.
+# parametres : aucun
 def afficher_menu_principal():
-    print("\n" + "=" * 60)
-    print("   PROJET AUTOMATES FINIS - EFREI P2 2025/2026")
-    print("=" * 60)
-    print("  1. Choisir un automate")
-    print("  9. Quitter")
-    print("-" * 60)
+    print("\n1. Choisir un automate")
+    print("9. Quitter")
 
 
-# ============================================================================================
-# Fonction : afficher_menu_automate
-# Role : Affiche le menu des opérations disponibles pour l'automate chargé.
-#        Indique l'état actuel de l'automate (déterministe, standard, complet, minimisé).
-# Parametres :
-#   - numero_automate : numéro de l'automate chargé
-#   - est_deterministe_flag : True si l'automate courant est déterministe
+# fonction : afficher_menu_automate
+# role : affiche le menu des operations disponibles pour l'automate charge.
+#        indique l'etat actuel de l'automate (deterministe, standard, complet, minimise).
+# parametres :
+#   - numero_automate : numero de l'automate charge
+#   - est_deterministe_flag : True si l'automate courant est deterministe
 #   - est_standard_flag : True si l'automate courant est standard
 #   - est_complet_flag : True si l'automate courant est complet
-#   - est_minimise : True si l'automate courant a été minimisé
-# ============================================================================================
+#   - est_minimise : True si l'automate courant a ete minimise
 def afficher_menu_automate(numero_automate, est_deterministe_flag, est_standard_flag, est_complet_flag, est_minimise):
     print("\n" + "=" * 60)
-    print(f"   AUTOMATE N.{numero_automate}")
+    print(f"                     AUTOMATE N.{numero_automate}")
     print("=" * 60)
 
-    # --- Affichage de l'état actuel de l'automate ---
-    # On utilise des indicateurs pour montrer visuellement le statut
+    # affichage etat actuel avec indicateurs
     print(f"  Deterministe : {'[OUI]' if est_deterministe_flag else '[NON]'}")
     print(f"  Standard     : {'[OUI]' if est_standard_flag else '[NON]'}")
     print(f"  Complet      : {'[OUI]' if est_complet_flag else '[NON]'}")
@@ -56,27 +47,25 @@ def afficher_menu_automate(numero_automate, est_deterministe_flag, est_standard_
     print("-" * 60)
 
 
-# ============================================================================================
-# Fonction : verifier_proprietes
-# Role : Vérifie les propriétés de l'automate (déterministe, standard, complet) SANS afficher
-#        les messages détaillés. Utilisé pour mettre à jour les indicateurs du menu.
-# Parametres :
-#   - automate : l'objet Automate à vérifier
-# Retour : tuple (verification_deterministe, verification_standard, verification_complet)
-# ============================================================================================
+# fonction : verifier_proprietes
+# role : verifie les proprietes de l'automate (deterministe, standard, complet) sans afficher
+#        les messages detailles. utilise pour mettre a jour les indicateurs du menu.
+# parametres :
+#   - automate : l'objet Automate a verifier
+# retour : tuple (verification_deterministe, verification_standard, verification_complet)
 def verifier_proprietes(automate):
     if not automate.alphabet:
         automate.get_alphabet()
 
     nombre_etats = len(automate.etats)
 
-    # --- Vérification déterministe (silencieuse) ---
+    # verif deterministe (silencieuse)
     verification_deterministe = True
     if len(automate.initial) != 1:
         verification_deterministe = False
     else:
         for indice_etat in range(nombre_etats):
-            # On vérifie qu'il n'y a pas plusieurs transitions par symbole
+            # check pas plusieurs transitions par symbole
             for symbole in automate.alphabet:
                 nombre_destinations = 0
                 for indice_arrivee in range(nombre_etats):
@@ -85,7 +74,7 @@ def verifier_proprietes(automate):
                 if nombre_destinations > 1:
                     verification_deterministe = False
                     break
-            # On vérifie qu'il n'y a pas d'epsilon-transitions
+            # check pas d'eps-transitions
             for indice_arrivee in range(nombre_etats):
                 if 'eps' in automate.transitions[indice_etat][indice_arrivee]:
                     verification_deterministe = False
@@ -93,7 +82,7 @@ def verifier_proprietes(automate):
             if not verification_deterministe:
                 break
 
-    # --- Vérification standard (silencieuse) ---
+    # verif standard (silencieuse)
     verification_standard = True
     if len(automate.initial) != 1:
         verification_standard = False
@@ -104,7 +93,7 @@ def verifier_proprietes(automate):
                 verification_standard = False
                 break
 
-    # --- Vérification complet (silencieuse, seulement si déterministe) ---
+    # verif complet (silencieuse, seulement si deterministe)
     verification_complet = False
     if verification_deterministe:
         verification_complet = True
@@ -124,28 +113,24 @@ def verifier_proprietes(automate):
     return verification_deterministe, verification_standard, verification_complet
 
 
-# ============================================================================================
-# Fonction : main
-# Role : Point d'entrée du programme. Implémente la boucle interactive avec un système de menus.
-#        Le menu principal permet de choisir un automate. Le menu automate permet d'appliquer
-#        les différentes opérations et de sauvegarder le résultat.
-# Parametres : Aucun
-# ============================================================================================
+# fonction : main
+# role : point d'entree du programme. implemente la boucle interactive avec un systeme de menus.
+#        le menu principal permet de choisir un automate. le menu automate permet d'appliquer
+#        les differentes operations et de sauvegarder le resultat.
+# parametres : aucun
 def main():
-    # --- Boucle principale du programme ---
-    # La boucle tourne jusqu'à ce que l'utilisateur choisisse de quitter (option 9)
+    # boucle principale, tourne jusqu'a quitter (option 9)
     while True:
         afficher_menu_principal()
         choix = input("Votre choix : ").strip()
 
         if choix == '9':
-            print("Au revoir !")
             break
         elif choix == '1':
-            # --- Sélection d'un automate ---
-            numero_saisi = input("Entrez le numero de l'automate : ").strip()
+            # selection d'un automate
+            numero_saisi = input("Numero de l'automate : ").strip()
 
-            # On vérifie que l'entrée est bien un nombre
+            # verif que c'est un nombre
             if not numero_saisi.isdigit():
                 print("Erreur : veuillez entrer un numero valide.")
                 continue
@@ -153,115 +138,104 @@ def main():
             numero_automate = int(numero_saisi)
             nom_fichier = f"Automates_Test/{numero_automate:02d}.txt"
 
-            # On vérifie que le fichier existe avant de le lire
+            # verif que le fichier existe
             if not os.path.exists(nom_fichier):
-                print(f"Erreur : le fichier '{nom_fichier}' n'existe pas.")
+                print(f"Erreur : '{nom_fichier}' n'existe pas.")
                 continue
 
-            # Appel à lire_automate() pour charger l'automate depuis le fichier
+            # chargement de l'automate depuis le fichier
             automate_original = lire_automate(nom_fichier)
 
-            # automate_courant : l'automate sur lequel on travaille (peut être transformé)
+            # automate_courant = celui sur lequel on travaille (peut etre transforme)
             automate_courant = copy.deepcopy(automate_original)
 
-            # est_minimise : sera mis à True après une minimisation explicite
+            # sera mis a true apres minimisation
             est_minimise = False
 
-            # Appel au menu_automate() pour gérer les opérations sur cet automate
+            # lancement menu automate
             quitter = menu_automate(numero_automate, automate_original, automate_courant, est_minimise)
             if quitter:
-                print("Au revoir !")
                 break
         else:
             print("Choix invalide.")
 
 
-# ============================================================================================
-# Fonction : menu_automate
-# Role : Gère le menu interactif pour un automate chargé. Permet d'appliquer les transformations
-#        (standardiser, déterminiser, minimiser), de tester des mots, de construire le
-#        complémentaire, et de sauvegarder le résultat.
-# Parametres :
-#   - numero_automate : numéro de l'automate (pour l'affichage et la sauvegarde)
-#   - automate_original : l'automate tel qu'il a été lu du fichier (jamais modifié)
-#   - automate_courant : l'automate courant, potentiellement transformé
-#   - est_minimise : True si l'automate a été minimisé
-# ============================================================================================
+# fonction : menu_automate
+# role : gere le menu interactif pour un automate charge. permet d'appliquer les transformations
+#        (standardiser, determiniser, minimiser), de tester des mots, de construire le
+#        complementaire, et de sauvegarder le resultat.
+# parametres :
+#   - numero_automate : numero de l'automate (pour l'affichage et la sauvegarde)
+#   - automate_original : l'automate tel qu'il a ete lu du fichier (jamais modifie)
+#   - automate_courant : l'automate courant, potentiellement transforme
+#   - est_minimise : True si l'automate a ete minimise
 def menu_automate(numero_automate, automate_original, automate_courant, est_minimise):
-    # --- Boucle du menu automate ---
+    # boucle du menu automate
     while True:
-        # On recalcule les propriétés à chaque tour car l'automate peut avoir changé
-        # Appel à verifier_proprietes() pour obtenir les indicateurs sans messages verbeux
+        # recalcul des proprietes a chaque tour car l'automate peut changer
         verification_deterministe, verification_standard, verification_complet = verifier_proprietes(automate_courant)
 
-        # Affichage du menu avec les indicateurs à jour
+        # affichage menu avec indicateurs a jour
         afficher_menu_automate(numero_automate, verification_deterministe, verification_standard, verification_complet, est_minimise)
         choix = input("Votre choix : ").strip()
 
-        # === Option 1 : Afficher l'automate ===
+        # option 1 : afficher l'automate
         if choix == '1':
             print(f"\nAlphabet : {automate_courant.alphabet}")
             print(f"Etats : {automate_courant.etats}")
             print(f"Etat(s) initial/initiaux : {automate_courant.initial}")
             print(f"Etat(s) final/finaux : {automate_courant.final}")
 
-            # Si l'automate a une correspondance (il a été déterminisé ou minimisé),
-            # on l'affiche pour que l'utilisateur comprenne la relation avec l'original
+            # si correspondance (determ ou minim), on l'affiche
             if automate_courant.correspondance:
                 print("\nCorrespondance des etats :")
                 for etat, anciens in automate_courant.correspondance.items():
                     print(f"  {etat} <- {{{', '.join(anciens)}}}")
 
             print()
-            # Appel à afficher_automate() pour montrer la table de transitions formatée
+            # table de transitions formatee
             afficher_automate(automate_courant)
 
-            # On affiche aussi les vérifications détaillées
-            print("--- Verifications detaillees ---")
-            print("\n* Deterministe ?")
-            # Appel à est_deterministe() pour afficher les raisons détaillées
+            # verifications detaillees
+            print("Deterministe ?")
             resultat_deterministe = est_deterministe(automate_courant)
             print(f"  => {'OUI' if resultat_deterministe else 'NON'}")
 
-            print("\n* Standard ?")
-            # Appel à est_standard() pour afficher les raisons détaillées
+            print("Standard ?")
             resultat_standard = est_standard(automate_courant)
             print(f"  => {'OUI' if resultat_standard else 'NON'}")
 
             if resultat_deterministe:
-                print("\n* Complet ?")
-                # Appel à est_complet() pour afficher les raisons détaillées
+                print("Complet ?")
                 resultat_complet = est_complet(automate_courant)
                 print(f"  => {'OUI' if resultat_complet else 'NON'}")
 
-        # === Option 2 : Standardiser ===
+        # option 2 : standardiser
         elif choix == '2':
             if verification_standard:
                 print("\nL'automate est deja standard, pas besoin de le standardiser.")
             else:
-                print("\nStandardisation en cours...")
-                # Appel à standardiser() pour créer un nouvel état initial sans transitions entrantes
+                print("Standardisation...")
+                # creation nouvel etat init sans transitions entrantes
                 automate_courant = standardiser(automate_courant)
-                est_minimise = False  # La minimisation n'est plus valide après une transformation
-                print("Automate standardise :")
-                # Appel à afficher_automate() pour montrer le résultat
+                est_minimise = False  # minimisation plus valide apres transfo
                 afficher_automate(automate_courant)
 
-        # === Option 3 : Déterminiser et compléter ===
+        # option 3 : determiniser et completer
         elif choix == '3':
             if verification_deterministe and verification_complet:
-                # ATTENTION : on ne doit PAS re-déterminiser un automate déjà déterministe (consigne)
+                # on re-determinise pas un automate deja det (consigne)
                 print("\nL'automate est deja deterministe et complet.")
             elif verification_deterministe and not verification_complet:
                 print("\nL'automate est deterministe mais pas complet. Completion en cours...")
-                # Appel à completer() car seule la complétion est nécessaire
+                # juste la completion car deja det
                 automate_courant = completer(automate_courant)
                 est_minimise = False
                 print("Automate apres completion :")
                 afficher_automate(automate_courant)
             else:
                 print("\nDeterminisation et completion en cours...")
-                # Appel à determiniser_et_completer() pour la construction par sous-ensembles
+                # construction par sous-ensembles
                 automate_courant = determiniser_et_completer(automate_courant)
                 est_minimise = False
                 print("\nAutomate deterministe complet (AFDC) :")
@@ -271,74 +245,68 @@ def menu_automate(numero_automate, automate_original, automate_courant, est_mini
                 print()
                 afficher_automate(automate_courant)
 
-        # === Option 4 : Minimiser ===
+        # option 4 : minimiser
         elif choix == '4':
             if not verification_deterministe or not verification_complet:
-                print("\nL'automate doit etre deterministe et complet avant la minimisation.")
-                print("Veuillez d'abord choisir l'option 3 (Determiniser et completer).")
+                print("Il faut d'abord determiniser et completer (option 3).")
             elif est_minimise:
                 print("\nL'automate est deja minimise.")
             else:
-                print("\nMinimisation en cours...")
-                print("Partitions successives :")
-                # Appel à minimiser() pour l'algorithme de Moore (affiche les partitions)
+                print("Minimisation...")
+                # algo de moore, affiche les partitions
                 automate_courant = minimiser(automate_courant)
                 est_minimise = True
-                print("\nAutomate minimal (AFDCM) :")
-                print("Correspondance des etats :")
+                print("Correspondance :")
                 for etat, anciens in automate_courant.correspondance.items():
                     print(f"  {etat} <- {{{', '.join(anciens)}}}")
                 print()
                 afficher_automate(automate_courant)
 
-        # === Option 5 : Reconnaissance de mot ===
+        # option 5 : reconnaissance de mot
         elif choix == '5':
             if not verification_deterministe or not verification_complet:
-                print("\nL'automate doit etre deterministe et complet pour la reconnaissance de mots.")
-                print("Veuillez d'abord choisir l'option 3 (Determiniser et completer).")
+                print("Il faut d'abord determiniser et completer (option 3).")
             else:
                 print(f"\nAlphabet de l'automate : {automate_courant.alphabet}")
                 mot = input("Entrez le mot a tester (mot vide = epsilon) : ").strip()
-                # Appel à reconnaitre_mot() pour tester le mot sur l'automate
+                # test du mot sur l'automate
                 if reconnaitre_mot(automate_courant, mot):
                     print(f"  => Le mot '{mot}' est RECONNU par l'automate.")
                 else:
                     print(f"  => Le mot '{mot}' n'est PAS reconnu par l'automate.")
 
-        # === Option 6 : Automate complémentaire ===
+        # option 6 : automate complementaire
         elif choix == '6':
             if not verification_deterministe or not verification_complet:
-                print("\nL'automate doit etre deterministe et complet pour calculer le complementaire.")
-                print("Veuillez d'abord choisir l'option 3 (Determiniser et completer).")
+                print("Il faut d'abord determiniser et completer (option 3).")
             else:
-                print("\nConstruction de l'automate complementaire...")
-                # Appel à complementaire() pour inverser les états finaux et non-finaux
+                print("Complementaire...")
+                # inversion etats finaux/non-finaux
                 automate_complementaire = complementaire(automate_courant)
                 print(f"Etats finaux actuels : {automate_courant.final}")
                 print(f"Nouveaux etats finaux (complementaire) : {automate_complementaire.final}\n")
                 afficher_automate(automate_complementaire)
 
-        # === Option 7 : Sauvegarder l'automate ===
+        # option 7 : sauvegarder
         elif choix == '7':
-            # Appel à sauvegarder_automate() pour écrire l'automate dans un fichier versionné
+            # ecriture dans un fichier versionne
             chemin = sauvegarder_automate(automate_courant, numero_automate)
             print(f"\nAutomate sauvegarde dans : {chemin}")
 
-        # === Option 8 : Choisir un autre automate ===
+        # option 8 : autre automate
         elif choix == '8':
-            # On sort du menu automate pour revenir au menu principal
+            # retour au menu principal
             break
 
-        # === Option 9 : Quitter ===
+        # option 9 : quitter
         elif choix == '9':
-            return True  # On signale au menu principal qu'il faut quitter
+            return True  # on signale au menu principal de quitter
         else:
             print("Choix invalide.")
 
-    return False  # Retour au menu principal sans quitter
+    return False  # retour au menu principal sans quitter
 
 
-# Point d'entrée du programme
-# On appelle main() uniquement si ce fichier est exécuté directement (pas importé)
+# point d'entree, on appelle main() si le fichier est execute directement
 if __name__ == '__main__':
     main()

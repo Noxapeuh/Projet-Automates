@@ -1,29 +1,29 @@
-# classe qui represente un automate
+# classe automate
 class Automate:
-    # constructeur : on initialise tout a vide
+    # constructeur, tout a vide
     def __init__(self):
-        self.etats = []          # liste des etats
-        self.initial = []        # liste des etats initiaux
-        self.final = []          # liste des etats finaux
-        self.transitions = []    # matrice de transitions
-        self.alphabet = []       # alphabet de l'automate
-        self.correspondance = {} # correspondance des etats apres determinisation/minimisation
+        self.etats = []          # les etats
+        self.initial = []        # etats initiaux
+        self.final = []          # etats finaux
+        self.transitions = []    # matrice transitions
+        self.alphabet = []       # alphabet
+        self.correspondance = {} # correspondance etats apres determ/minim
 
-    # fonction qui calcule l'alphabet a partir des transitions
+    # calcule l'alphabet depuis les transitions
     def get_alphabet(self):
         alphabet = []
         nb_etats = len(self.etats)
 
-        # on parcourt toute la matrice de transitions
+        # parcours matrice transitions
         for i in range(nb_etats):
             for j in range(nb_etats):
-                # pour chaque symbole dans la case [i][j]
+                # chaque symbole dans la case [i][j]
                 for symbole in self.transitions[i][j]:
-                    # on n'ajoute pas epsilon et on evite les doublons
+                    # on ajoute pas eps et pas de doublons
                     if symbole != 'eps' and symbole not in alphabet:
                         alphabet.append(symbole)
 
-        # on trie l'alphabet
+        # tri
         alphabet.sort()
         self.alphabet = alphabet
         return self.alphabet

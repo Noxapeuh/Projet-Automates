@@ -2,46 +2,42 @@ import copy
 from automate import Automate
 
 
-# ============================================================================================
-# Fonction : est_deterministe
-# Role : Vérifie si l'automate est déterministe. Un automate est déterministe si et seulement
-#        si : (1) il possède exactement un seul état initial, et (2) pour chaque état et
-#        chaque symbole de l'alphabet, il y a AU PLUS une transition, et (3) il n'y a pas
+# fonction : est_deterministe
+# role : verifie si l'automate est deterministe. un automate est deterministe ssi :
+#        (1) il possede exactement un seul etat initial, et (2) pour chaque etat et
+#        chaque symbole de l'alphabet, il y a au plus une transition, et (3) il n'y a pas
 #        d'epsilon-transitions.
-#        Affiche les raisons si l'automate n'est pas déterministe.
-# Parametres :
-#   - automate : l'objet Automate à vérifier
-# Retour : True si déterministe, False sinon
-# ============================================================================================
+#        affiche les raisons si l'automate n'est pas deterministe.
+# parametres :
+#   - automate : l'objet Automate a verifier
+# retour : True si deterministe, False sinon
 def est_deterministe(automate):
-    # On récupère l'alphabet si ce n'est pas déjà fait
+    # recup alphabet si pas deja fait
     if not automate.alphabet:
         automate.get_alphabet()
 
-    resultat = True  # Variable qui sera mise à False si on trouve une raison de non-déterminisme
+    resultat = True  # mis a false si on trouve un pb
     nombre_etats = len(automate.etats)
 
-    # Condition 1 : vérifier qu'il y a exactement un seul état initial
+    # condition 1 : un seul etat initial
     if len(automate.initial) != 1:
         print(f"  -> Non deterministe : il y a {len(automate.initial)} etats initiaux ({', '.join(automate.initial)}) au lieu de 1.")
         resultat = False
 
-    # Condition 2 : vérifier qu'il n'y a pas plusieurs transitions pour le même symbole depuis un état
-    # Boucle indice_depart : on regarde chaque état de départ
+    # condition 2 : pas plusieurs transitions pour le meme symbole depuis un etat
     for indice_depart in range(nombre_etats):
         for symbole in automate.alphabet:
-            # On compte combien de transitions partent de l'état avec le symbole donné
+            # on compte combien de transitions partent avec ce symbole
             nombre_destinations = 0
-            # Boucle indice_arrivee : on regarde chaque état d'arrivée possible
             for indice_arrivee in range(nombre_etats):
                 if symbole in automate.transitions[indice_depart][indice_arrivee]:
                     nombre_destinations += 1
-            # S'il y a plus d'une destination pour un même symbole, ce n'est pas déterministe
+            # plus d'une dest = pas deterministe
             if nombre_destinations > 1:
                 print(f"  -> Non deterministe : depuis l'etat {automate.etats[indice_depart]}, le symbole '{symbole}' mene a {nombre_destinations} etats.")
                 resultat = False
 
-        # Condition 3 : vérifier s'il y a des epsilon-transitions (rend l'automate non déterministe)
+        # condition 3 : pas d'eps-transitions
         for indice_arrivee in range(nombre_etats):
             if 'eps' in automate.transitions[indice_depart][indice_arrivee]:
                 print(f"  -> Non deterministe : epsilon-transition de l'etat {automate.etats[indice_depart]} vers {automate.etats[indice_arrivee]}.")
@@ -50,30 +46,27 @@ def est_deterministe(automate):
     return resultat
 
 
-# ============================================================================================
-# Fonction : est_standard
-# Role : Vérifie si l'automate est standard. Un automate est standard si et seulement si :
-#        (1) il possède un unique état initial, et (2) aucune transition ne mène vers cet
-#        état initial (pas de flèche entrante sur l'état initial).
-# Parametres :
-#   - automate : l'objet Automate à vérifier
-# Retour : True si standard, False sinon
-# ============================================================================================
+# fonction : est_standard
+# role : verifie si l'automate est standard. un automate est standard ssi :
+#        (1) il possede un unique etat initial, et (2) aucune transition ne mene vers cet
+#        etat initial (pas de fleche entrante sur l'etat initial).
+# parametres :
+#   - automate : l'objet Automate a verifier
+# retour : True si standard, False sinon
 def est_standard(automate):
-    # Condition 1 : un seul état initial
+    # un seul etat initial
     if len(automate.initial) != 1:
         print(f"  -> Non standard : il y a {len(automate.initial)} etats initiaux au lieu de 1.")
         return False
 
-    # indice_etat_initial : index de l'état initial dans la liste des états
+    # index de l'etat init
     etat_initial = automate.initial[0]
     indice_etat_initial = automate.etats.index(etat_initial)
     nombre_etats = len(automate.etats)
 
-    # Condition 2 : on vérifie qu'aucune transition ne pointe vers l'état initial
-    # Boucle indice_depart : on parcourt chaque état de départ
+    # verif qu'aucune transition pointe vers l'etat init
     for indice_depart in range(nombre_etats):
-        # transitions[indice_depart][indice_etat_initial] contient les symboles pour aller vers l'état initial
+        # si y'a des transitions vers l'etat init c'est pas standard
         if len(automate.transitions[indice_depart][indice_etat_initial]) > 0:
             print(f"  -> Non standard : il y a une transition de l'etat {automate.etats[indice_depart]} vers l'etat initial {etat_initial}.")
             return False
@@ -81,33 +74,30 @@ def est_standard(automate):
     return True
 
 
-# ============================================================================================
-# Fonction : est_complet
-# Role : Vérifie si l'automate (déterministe) est complet. Un automate déterministe est
-#        complet si pour chaque état et chaque symbole de l'alphabet, il existe exactement
-#        une transition. Affiche les raisons si incomplet.
-# Parametres :
-#   - automate : l'objet Automate à vérifier
-# Retour : True si complet, False sinon
-# ============================================================================================
+# fonction : est_complet
+# role : verifie si l'automate (deterministe) est complet. un automate deterministe est
+#        complet si pour chaque etat et chaque symbole de l'alphabet, il existe exactement
+#        une transition. affiche les raisons si incomplet.
+# parametres :
+#   - automate : l'objet Automate a verifier
+# retour : True si complet, False sinon
 def est_complet(automate):
     if not automate.alphabet:
         automate.get_alphabet()
 
     nombre_etats = len(automate.etats)
-    resultat = True  # Variable de résultat
+    resultat = True  # var de resultat
 
-    # Boucle indice_depart : on parcourt chaque état
+    # pour chaque etat on verifie qu'il y a une transition par symbole
     for indice_depart in range(nombre_etats):
-        # Pour chaque symbole de l'alphabet, on vérifie qu'il existe au moins une transition
         for symbole in automate.alphabet:
-            transition_trouvee = False  # Sera True si on trouve une transition pour ce symbole
-            # Boucle indice_arrivee : on cherche si ce symbole apparaît dans une transition sortante
+            transition_trouvee = False  # true si on trouve une transition
+            # on cherche si le symbole apparait dans une transition sortante
             for indice_arrivee in range(nombre_etats):
                 if symbole in automate.transitions[indice_depart][indice_arrivee]:
                     transition_trouvee = True
-                    break  # Pas besoin de chercher plus loin, on a trouvé
-            # Si aucune transition trouvée pour ce symbole depuis cet état
+                    break  # pas besoin de chercher plus loin
+            # si rien trouvé
             if not transition_trouvee:
                 print(f"  -> Non complet : pas de transition depuis l'etat {automate.etats[indice_depart]} avec le symbole '{symbole}'.")
                 resultat = False
@@ -115,55 +105,50 @@ def est_complet(automate):
     return resultat
 
 
-# ============================================================================================
-# Fonction : standardiser
-# Role : Crée un nouvel automate standard équivalent. On ajoute un nouvel état initial 'i'
-#        qui reprend toutes les transitions sortantes des anciens états initiaux. L'ancien
-#        état initial n'est plus initial. Si un ancien état initial était final, le nouvel
-#        état 'i' est aussi final.
-# Parametres :
-#   - automate : l'objet Automate à standardiser
-# Retour : Un nouvel objet Automate qui est la version standardisée
-# ============================================================================================
+# fonction : standardiser
+# role : cree un nouvel automate standard equivalent. on ajoute un nouvel etat initial 'i'
+#        qui reprend toutes les transitions sortantes des anciens etats initiaux. l'ancien
+#        etat initial n'est plus initial. si un ancien etat initial etait final, le nouvel
+#        etat 'i' est aussi final.
+# parametres :
+#   - automate : l'objet Automate a standardiser
+# retour : un nouvel objet Automate qui est la version standardisee
 def standardiser(automate):
-    # On crée une copie profonde pour ne pas modifier l'original
+    # copie profonde pour pas modifier l'original
     nouveau = copy.deepcopy(automate)
 
     nombre_etats_ancien = len(nouveau.etats)
-    nouvel_etat = 'i'  # Nom du nouvel état initial
+    nouvel_etat = 'i'  # nom du nouvel etat init
 
-    # On ajoute le nouvel état au début de la liste des états
+    # ajout du nouvel etat au debut
     nouveau.etats.insert(0, nouvel_etat)
     nombre_etats = len(nouveau.etats)
 
-    # On reconstruit la matrice de transitions avec une ligne et une colonne en plus
-    # nouvelle_matrice : matrice (nombre_etats x nombre_etats) initialisée avec des listes vides
+    # reconstruction matrice transitions avec une ligne/colonne en plus
     nouvelle_matrice = [[[] for _ in range(nombre_etats)] for _ in range(nombre_etats)]
 
-    # On recopie l'ancienne matrice dans la nouvelle (décalée de 1 car on a inséré 'i' en position 0)
-    # Boucle indice_ligne : parcourt les anciennes lignes
-    # Boucle indice_colonne : parcourt les anciennes colonnes
+    # recopie ancienne matrice dans la nouvelle (decalee de 1 car 'i' en pos 0)
     for indice_ligne in range(nombre_etats_ancien):
         for indice_colonne in range(nombre_etats_ancien):
-            # indice_ligne+1 et indice_colonne+1 car le nouvel état 'i' occupe l'index 0
+            # +1 car le nouvel etat 'i' occupe l'index 0
             nouvelle_matrice[indice_ligne + 1][indice_colonne + 1] = list(nouveau.transitions[indice_ligne][indice_colonne])
 
-    # On copie toutes les transitions sortantes des anciens états initiaux vers le nouvel état 'i'
-    # Cela permet au nouvel état initial de se comporter comme les anciens initiaux
+    # copie des transitions sortantes des anciens etats init vers 'i'
+    # comme ca 'i' se comporte comme les anciens init
     for ancien_initial in nouveau.initial:
-        # indice_ancien_initial : index de l'ancien état initial dans la NOUVELLE liste d'états
+        # index de l'ancien etat init dans la nouvelle liste
         indice_ancien_initial = nouveau.etats.index(ancien_initial)
-        # Boucle indice_destination : pour chaque destination possible depuis cet ancien état initial
+        # pour chaque dest possible depuis cet ancien init
         for indice_destination in range(nombre_etats):
             for symbole in nouvelle_matrice[indice_ancien_initial][indice_destination]:
-                # On ajoute le symbole seulement s'il n'est pas déjà présent (éviter les doublons)
+                # ajout seulement si pas deja present (eviter doublons)
                 if symbole not in nouvelle_matrice[0][indice_destination]:
                     nouvelle_matrice[0][indice_destination].append(symbole)
 
     nouveau.transitions = nouvelle_matrice
 
-    # Si un des anciens états initiaux était final, le nouvel état doit aussi être final
-    # Car l'automate original acceptait le mot vide
+    # si un ancien init etait final, le nouvel etat doit etre final aussi
+    # car l'automate original acceptait le mot vide
     nouvel_etat_est_final = False
     for ancien_initial in nouveau.initial:
         if ancien_initial in nouveau.final:
@@ -173,63 +158,59 @@ def standardiser(automate):
     if nouvel_etat_est_final:
         nouveau.final.append(nouvel_etat)
 
-    # Le seul état initial est maintenant le nouvel état 'i'
+    # maintenant le seul etat init c'est 'i'
     nouveau.initial = [nouvel_etat]
 
-    # On recalcule l'alphabet car la structure a changé
+    # recalcul alphabet
     nouveau.get_alphabet()
 
     return nouveau
 
 
-# ============================================================================================
-# Fonction : epsilon_fermeture
-# Role : Calcule l'epsilon-fermeture d'un ensemble d'états, c'est-à-dire tous les états
-#        atteignables depuis ces états en ne suivant QUE des epsilon-transitions.
-#        Utilise un parcours en largeur (BFS) avec une pile.
-# Parametres :
+# fonction : epsilon_fermeture
+# role : calcule l'epsilon-fermeture d'un ensemble d'etats, cad tous les etats
+#        atteignables depuis ces etats en ne suivant que des epsilon-transitions.
+#        utilise un parcours en largeur (BFS) avec une pile.
+# parametres :
 #   - automate : l'objet Automate contenant les transitions
-#   - ensemble_etats : liste d'indices d'états dont on veut calculer l'epsilon-fermeture
-# Retour : ensemble (set) des indices d'états dans l'epsilon-fermeture
-# ============================================================================================
+#   - ensemble_etats : liste d'indices d'etats dont on veut calculer l'eps-fermeture
+# retour : ensemble (set) des indices d'etats dans l'epsilon-fermeture
 def epsilon_fermeture(automate, ensemble_etats):
-    # fermeture : ensemble qui contiendra tous les états atteignables par epsilon
+    # fermeture = ensemble des etats atteignables par eps
     fermeture = set(ensemble_etats)
-    # pile : file de traitement pour le parcours en largeur
+    # pile pour le parcours
     pile = list(ensemble_etats)
     nombre_etats = len(automate.etats)
 
-    # Tant qu'il reste des états à traiter dans la pile
+    # tant qu'il reste des etats a traiter
     while pile:
-        # On retire un état de la pile pour le traiter
+        # on retire un etat
         etat_en_cours = pile.pop()
-        # Boucle indice_arrivee : on regarde toutes les transitions sortantes de cet état
+        # on regarde toutes les transitions sortantes
         for indice_arrivee in range(nombre_etats):
-            # Si il y a une epsilon-transition et qu'on n'a pas encore visité cet état
+            # eps-transition + pas encore visite
             if 'eps' in automate.transitions[etat_en_cours][indice_arrivee] and indice_arrivee not in fermeture:
                 fermeture.add(indice_arrivee)
-                pile.append(indice_arrivee)  # On ajoute pour explorer ses propres epsilon-transitions
+                pile.append(indice_arrivee)  # on ajoute pour explorer ses propres eps-transitions
 
     return fermeture
 
 
-# ============================================================================================
-# Fonction : determiniser_et_completer
-# Role : Construit l'automate déterministe complet équivalent à l'automate courant en
-#        utilisant la construction par sous-ensembles. Gère les epsilon-transitions.
-#        Chaque état du nouvel automate correspond à un ensemble d'états de l'original.
-#        La notation est "123" si tous les états <= 9, "1.2.3" sinon.
-# Parametres :
-#   - automate : l'objet Automate à déterminiser
-# Retour : Un nouvel objet Automate déterministe et complet
-# ============================================================================================
+# fonction : determiniser_et_completer
+# role : construit l'automate deterministe complet equivalent a l'automate courant en
+#        utilisant la construction par sous-ensembles. gere les epsilon-transitions.
+#        chaque etat du nouvel automate correspond a un ensemble d'etats de l'original.
+#        la notation est "123" si tous les etats <= 9, "1.2.3" sinon.
+# parametres :
+#   - automate : l'objet Automate a determiniser
+# retour : un nouvel objet Automate deterministe et complet
 def determiniser_et_completer(automate):
     if not automate.alphabet:
         automate.get_alphabet()
 
     nombre_etats = len(automate.etats)
 
-    # possede_epsilon : indique si l'automate a des epsilon-transitions
+    # check si y'a des eps-transitions
     possede_epsilon = False
     for indice_depart in range(nombre_etats):
         for indice_arrivee in range(nombre_etats):
@@ -239,50 +220,50 @@ def determiniser_et_completer(automate):
         if possede_epsilon:
             break
 
-    # --- Calcul de l'état initial du nouvel automate ---
+    # calcul etat init du nouvel automate
     indices_initiaux = [automate.etats.index(etat) for etat in automate.initial]
 
-    # Si l'automate a des epsilon-transitions, l'état initial est l'epsilon-fermeture des initiaux
+    # si eps-transitions, etat init = eps-fermeture des initiaux
     if possede_epsilon:
         etat_initial_determinise = frozenset(epsilon_fermeture(automate, indices_initiaux))
     else:
         etat_initial_determinise = frozenset(indices_initiaux)
 
-    # --- Construction par sous-ensembles ---
-    # etats_determinises : dictionnaire {frozenset d'indices -> index dans le nouvel automate}
+    # construction par sous-ensembles
+    # etats_determinises = {frozenset d'indices -> index dans le nouvel automate}
     etats_determinises = {etat_initial_determinise: 0}
-    # file_attente : file d'attente des états à traiter (parcours en largeur)
+    # file d'attente pour le parcours en largeur
     file_attente = [etat_initial_determinise]
-    # transitions_determinisees : liste de dictionnaires {symbole -> frozenset d'indices}
+    # transitions_determinisees = liste de dicos {symbole -> frozenset d'indices}
     transitions_determinisees = []
-    # ordre_etats : liste ordonnée des frozensets pour garder l'ordre de découverte
+    # ordre_etats = liste ordonnee des frozensets
     ordre_etats = [etat_initial_determinise]
 
-    # Tant qu'il reste des états à explorer
+    # tant qu'il reste des etats a explorer
     while file_attente:
-        # On récupère le prochain ensemble d'états à traiter
+        # prochain ensemble d'etats a traiter
         ensemble_courant = file_attente.pop(0)
-        transitions_etat = {}  # Dictionnaire des transitions pour cet état
+        transitions_etat = {}  # transitions pour cet etat
 
-        # Pour chaque symbole de l'alphabet, on calcule l'ensemble des états atteignables
+        # pour chaque symbole, on calcule les etats atteignables
         for symbole in automate.alphabet:
-            # destinations : ensemble des états atteignables depuis l'ensemble courant avec le symbole
+            # destinations depuis l'ensemble courant avec le symbole
             destinations = set()
-            # Boucle : pour chaque état individuel dans l'ensemble courant
+            # pour chaque etat dans l'ensemble courant
             for indice_etat in ensemble_courant:
-                # Boucle indice_arrivee : on regarde chaque état d'arrivée possible
+                # on regarde chaque etat d'arrivee possible
                 for indice_arrivee in range(nombre_etats):
                     if symbole in automate.transitions[indice_etat][indice_arrivee]:
                         destinations.add(indice_arrivee)
 
-            # Si l'automate a des epsilon-transitions, on applique l'epsilon-fermeture
+            # si eps-transitions, on applique l'eps-fermeture
             if possede_epsilon and destinations:
                 destinations = epsilon_fermeture(automate, list(destinations))
 
             destination_figee = frozenset(destinations)
             transitions_etat[symbole] = destination_figee
 
-            # Si cet ensemble d'états est nouveau, on l'ajoute à la liste
+            # si cet ensemble est nouveau on l'ajoute
             if destination_figee not in etats_determinises:
                 etats_determinises[destination_figee] = len(etats_determinises)
                 file_attente.append(destination_figee)
@@ -290,45 +271,45 @@ def determiniser_et_completer(automate):
 
         transitions_determinisees.append(transitions_etat)
 
-    # --- Construction du nouvel automate ---
+    # construction du nouvel automate
     nouveau = Automate()
     nombre_nouveaux_etats = len(ordre_etats)
 
-    # nombre_etat_max : le plus grand numéro d'état original, pour décider de la notation
+    # plus grand num d'etat original, pour choisir la notation
     nombre_etat_max = max(int(etat) for etat in automate.etats if etat.isdigit()) if any(etat.isdigit() for etat in automate.etats) else 0
-    # utiliser_points : True si les états originaux ont des numéros >= 10 (notation "1.2.3")
+    # utiliser_points = true si etats >= 10 (notation "1.2.3")
     utiliser_points = nombre_etat_max >= 10
 
-    # On construit les noms des nouveaux états et le dictionnaire de correspondance
+    # noms des nouveaux etats + dico de correspondance
     for indice, ensemble in enumerate(ordre_etats):
         if not ensemble:
-            # Ensemble vide = état poubelle
+            # ensemble vide = etat poubelle
             nom = 'P'
         else:
-            # On trie les indices pour avoir un nom cohérent
+            # tri des indices pour nom coherent
             indices_tries = sorted(ensemble)
             noms_tries = [automate.etats[indice_etat] for indice_etat in indices_tries]
             if utiliser_points:
-                # Notation avec points si des états ont des numéros >= 10 (ex: "1.12.3")
+                # notation avec points si etats >= 10 (ex: "1.12.3")
                 nom = '.'.join(noms_tries)
             else:
-                # Notation concaténée si tous les états <= 9 (ex: "123")
+                # notation concatenee si etats <= 9 (ex: "123")
                 nom = ''.join(noms_tries)
         nouveau.etats.append(nom)
-        # On stocke la correspondance pour l'affichage
+        # stockage correspondance pour l'affichage
         nouveau.correspondance[nom] = [automate.etats[indice_etat] for indice_etat in sorted(ensemble)] if ensemble else ['P']
 
-    # L'état initial du nouvel automate est le premier état (index 0)
+    # etat init = premier etat (index 0)
     nouveau.initial = [nouveau.etats[0]]
 
-    # Un état du nouvel automate est final si AU MOINS UN des états originaux qu'il contient est final
+    # un etat est final si au moins un des etats originaux qu'il contient est final
     indices_finaux = {automate.etats.index(etat) for etat in automate.final}
     for indice, ensemble in enumerate(ordre_etats):
-        # On vérifie l'intersection entre l'ensemble courant et les indices finaux
+        # intersection entre l'ensemble courant et les indices finaux
         if ensemble & indices_finaux:
             nouveau.final.append(nouveau.etats[indice])
 
-    # Construction de la matrice de transitions du nouvel automate
+    # matrice de transitions du nouvel automate
     nouveau.transitions = [[[] for _ in range(nombre_nouveaux_etats)] for _ in range(nombre_nouveaux_etats)]
     for indice, ensemble in enumerate(ordre_etats):
         for symbole in automate.alphabet:
@@ -338,10 +319,10 @@ def determiniser_et_completer(automate):
 
     nouveau.alphabet = list(automate.alphabet)
 
-    # --- Complétion : ajouter l'état poubelle si nécessaire ---
+    # completion : ajout etat poubelle si necessaire
     possede_poubelle = 'P' in nouveau.etats
 
-    # Si l'état poubelle n'existe pas, on vérifie s'il faut en ajouter un
+    # si pas de poubelle, on check s'il en faut une
     if not possede_poubelle:
         transition_manquante = False
         for indice_depart in range(nombre_nouveaux_etats):
@@ -358,21 +339,19 @@ def determiniser_et_completer(automate):
                 break
 
         if transition_manquante:
-            # On appelle completer() pour ajouter l'état poubelle et les transitions manquantes
+            # on appelle completer() pour ajouter la poubelle
             nouveau = completer(nouveau)
 
     return nouveau
 
 
-# ============================================================================================
-# Fonction : completer
-# Role : Complète un automate déterministe en ajoutant un état poubelle 'P' et en ajoutant
-#        toutes les transitions manquantes vers cet état poubelle. L'état poubelle boucle
-#        sur lui-même pour tous les symboles.
-# Parametres :
-#   - automate : l'objet Automate à compléter
-# Retour : Un nouvel objet Automate complet
-# ============================================================================================
+# fonction : completer
+# role : complete un automate deterministe en ajoutant un etat poubelle 'P' et en ajoutant
+#        toutes les transitions manquantes vers cet etat poubelle. l'etat poubelle boucle
+#        sur lui-meme pour tous les symboles.
+# parametres :
+#   - automate : l'objet Automate a completer
+# retour : un nouvel objet Automate complet
 def completer(automate):
     nouveau = copy.deepcopy(automate)
     if not nouveau.alphabet:
@@ -380,7 +359,7 @@ def completer(automate):
 
     nombre_etats = len(nouveau.etats)
 
-    # On vérifie d'abord si la complétion est nécessaire
+    # on check si la completion est necessaire
     besoin_poubelle = False
     for indice_depart in range(nombre_etats):
         for symbole in nouveau.alphabet:
@@ -396,22 +375,21 @@ def completer(automate):
             break
 
     if not besoin_poubelle:
-        # L'automate est déjà complet, pas besoin d'ajouter un état poubelle
+        # deja complet, pas besoin de poubelle
         return nouveau
 
-    # On ajoute l'état poubelle 'P' à la liste des états
+    # ajout etat poubelle 'P'
     nouveau.etats.append('P')
     nombre_etats_avec_poubelle = len(nouveau.etats)
 
-    # On agrandit la matrice de transitions pour inclure la nouvelle colonne et ligne de 'P'
+    # agrandissement matrice pour inclure P
     nouvelle_matrice = [[[] for _ in range(nombre_etats_avec_poubelle)] for _ in range(nombre_etats_avec_poubelle)]
-    # On recopie l'ancienne matrice dans la nouvelle
+    # recopie ancienne matrice
     for indice_depart in range(nombre_etats):
         for indice_arrivee in range(nombre_etats):
             nouvelle_matrice[indice_depart][indice_arrivee] = list(nouveau.transitions[indice_depart][indice_arrivee])
 
-    # Pour chaque état et chaque symbole, s'il n'y a pas de transition, on redirige vers P
-    # indice_poubelle : index de l'état poubelle dans la liste des états
+    # pour chaque etat/symbole, si pas de transition on redirige vers P
     indice_poubelle = nombre_etats_avec_poubelle - 1
     for indice_depart in range(nombre_etats_avec_poubelle):
         for symbole in nouveau.alphabet:
@@ -420,7 +398,7 @@ def completer(automate):
                 if symbole in nouvelle_matrice[indice_depart][indice_arrivee]:
                     transition_existe = True
                     break
-            # Si aucune transition n'existe, on redirige vers l'état poubelle
+            # si aucune transition, on redirige vers poubelle
             if not transition_existe:
                 nouvelle_matrice[indice_depart][indice_poubelle].append(symbole)
 
@@ -428,46 +406,42 @@ def completer(automate):
     return nouveau
 
 
-# ============================================================================================
-# Fonction : minimiser
-# Role : Construit l'automate minimal équivalent en utilisant l'algorithme de Moore
-#        (partitionnement successif). Affiche chaque étape de partitionnement.
-#        L'automate doit être déterministe et complet avant la minimisation.
-# Parametres :
-#   - automate : l'objet Automate à minimiser
-# Retour : Un nouvel objet Automate minimal
-# ============================================================================================
+# fonction : minimiser
+# role : construit l'automate minimal equivalent en utilisant l'algorithme de moore
+#        (partitionnement successif). affiche chaque etape de partitionnement.
+#        l'automate doit etre deterministe et complet avant la minimisation.
+# parametres :
+#   - automate : l'objet Automate a minimiser
+# retour : un nouvel objet Automate minimal
 def minimiser(automate):
     if not automate.alphabet:
         automate.get_alphabet()
 
     nombre_etats = len(automate.etats)
 
-    # --- Partition initiale (Partition 0) ---
-    # On sépare les états en deux groupes : finaux (groupe 1) et non-finaux (groupe 0)
+    # partition initiale (P0) : finaux (grp 1) et non-finaux (grp 0)
     partition = [0] * nombre_etats
     for indice_etat in range(nombre_etats):
         if automate.etats[indice_etat] in automate.final:
             partition[indice_etat] = 1
 
-    numero_partition = 0  # Compteur de partitions pour l'affichage
+    numero_partition = 0  # compteur pour l'affichage
     print(f"  Partition {numero_partition} : {_afficher_partition(automate, partition)}")
 
-    # --- Raffinement successif ---
-    # On raffine la partition jusqu'à ce qu'elle ne change plus (point fixe)
+    # raffinement successif jusqu'au point fixe
     while True:
         nouvelle_partition = [0] * nombre_etats
-        # signatures : dictionnaire {signature -> numéro de nouveau groupe}
+        # signatures = {signature -> num de nouveau groupe}
         signatures = {}
-        prochain_groupe = 0  # Compteur pour nommer les nouveaux groupes
+        prochain_groupe = 0  # compteur pour les nouveaux grp
 
-        # Boucle indice_etat : pour chaque état, on calcule sa "signature"
+        # pour chaque etat on calcule sa signature
         for indice_etat in range(nombre_etats):
-            # La signature d'un état = (son groupe actuel, les groupes de ses destinations par symbole)
-            # Deux états avec la même signature restent dans le même groupe
+            # signature = (grp actuel, grp des destinations par symbole)
+            # meme signature = meme groupe
             signature = [partition[indice_etat]]
             for symbole in automate.alphabet:
-                # On cherche la destination de l'état avec le symbole
+                # destination de l'etat avec ce symbole
                 groupe_destination = -1
                 for indice_arrivee in range(nombre_etats):
                     if symbole in automate.transitions[indice_etat][indice_arrivee]:
@@ -475,9 +449,9 @@ def minimiser(automate):
                         break
                 signature.append(groupe_destination)
 
-            signature_tuple = tuple(signature)  # On convertit en tuple pour l'utiliser comme clé
+            signature_tuple = tuple(signature)  # tuple pour utiliser comme cle
 
-            # Si cette signature est nouvelle, on lui attribue un nouveau numéro de groupe
+            # si nouvelle signature, on lui donne un nouveau num de grp
             if signature_tuple not in signatures:
                 signatures[signature_tuple] = prochain_groupe
                 prochain_groupe += 1
@@ -487,50 +461,50 @@ def minimiser(automate):
         numero_partition += 1
         print(f"  Partition {numero_partition} : {_afficher_partition(automate, nouvelle_partition)}")
 
-        # Si la partition n'a pas changé, on a atteint le point fixe
+        # si partition inchangee, point fixe atteint
         if nouvelle_partition == partition:
             print("  => Point fixe atteint, la partition est stable.")
             break
 
         partition = nouvelle_partition
 
-    # --- Construction de l'automate minimal ---
+    # construction automate minimal
     nouveau = Automate()
     nombre_groupes = max(partition) + 1
 
-    # On nomme les nouveaux états par leur numéro de groupe
+    # noms des nouveaux etats = num de groupe
     nouveau.etats = [str(groupe) for groupe in range(nombre_groupes)]
 
-    # Correspondance : quel groupe correspond à quels anciens états
+    # correspondance : quel grp = quels anciens etats
     for groupe in range(nombre_groupes):
         etats_du_groupe = [automate.etats[indice] for indice in range(nombre_etats) if partition[indice] == groupe]
         nouveau.correspondance[str(groupe)] = etats_du_groupe
 
-    # L'état initial est le groupe contenant l'ancien état initial
+    # etat init = grp contenant l'ancien etat init
     for etat_initial in automate.initial:
         indice_initial = automate.etats.index(etat_initial)
         groupe_initial = str(partition[indice_initial])
         if groupe_initial not in nouveau.initial:
             nouveau.initial.append(groupe_initial)
 
-    # Les états finaux sont les groupes contenant au moins un ancien état final
+    # etats finaux = grp contenant au moins un ancien etat final
     for etat_final in automate.final:
         indice_final = automate.etats.index(etat_final)
         groupe_final = str(partition[indice_final])
         if groupe_final not in nouveau.final:
             nouveau.final.append(groupe_final)
 
-    # Construction de la matrice de transitions du nouvel automate
+    # matrice transitions du nouvel automate
     nouveau.transitions = [[[] for _ in range(nombre_groupes)] for _ in range(nombre_groupes)]
-    # On prend un représentant de chaque groupe pour définir les transitions
+    # on prend un representant de chaque grp
     for groupe in range(nombre_groupes):
-        # representant : le premier état trouvé dans ce groupe
+        # representant = premier etat du grp
         representant = -1
         for indice_etat in range(nombre_etats):
             if partition[indice_etat] == groupe:
                 representant = indice_etat
                 break
-        # Pour chaque symbole, on regarde où va le représentant
+        # pour chaque symbole, on regarde ou va le representant
         for symbole in automate.alphabet:
             for indice_arrivee in range(nombre_etats):
                 if symbole in automate.transitions[representant][indice_arrivee]:
@@ -543,94 +517,88 @@ def minimiser(automate):
     return nouveau
 
 
-# ============================================================================================
-# Fonction : _afficher_partition
-# Role : Formate une partition pour l'affichage. Regroupe les états par numéro de groupe.
-#        Fonction utilitaire privée (préfixe _), utilisée uniquement par minimiser().
-# Parametres :
+# fonction : _afficher_partition
+# role : formate une partition pour l'affichage. regroupe les etats par numero de groupe.
+#        fct utilitaire privee (prefixe _), utilisee uniquement par minimiser().
+# parametres :
 #   - automate : l'objet Automate dont on affiche la partition
-#   - partition : liste d'entiers, partition[i] = numéro de groupe de l'état i
-# Retour : chaîne formatée (ex: "{0, 2, 3} {1, 4}")
-# ============================================================================================
+#   - partition : liste d'entiers, partition[i] = numero de groupe de l'etat i
+# retour : chaine formatee (ex: "{0, 2, 3} {1, 4}")
 def _afficher_partition(automate, partition):
-    # groupes : dictionnaire {numéro de groupe -> liste des noms d'états}
+    # groupes = {num grp -> liste noms etats}
     groupes = {}
     for indice, numero_groupe in enumerate(partition):
         if numero_groupe not in groupes:
             groupes[numero_groupe] = []
         groupes[numero_groupe].append(automate.etats[indice])
 
-    # On formate chaque groupe entre accolades
+    # formatage chaque grp entre accolades
     parties = []
     for numero_groupe in sorted(groupes.keys()):
         parties.append('{' + ', '.join(groupes[numero_groupe]) + '}')
     return ' '.join(parties)
 
 
-# ============================================================================================
-# Fonction : reconnaitre_mot
-# Role : Teste si un mot est reconnu par l'automate déterministe complet. On part de l'état
-#        initial et on suit les transitions symbole par symbole. Si on arrive sur un état
-#        final à la fin du mot, le mot est reconnu.
-# Parametres :
-#   - automate : l'objet Automate déterministe complet
-#   - mot : chaîne de caractères à tester (ex: "aab")
-# Retour : True si le mot est reconnu, False sinon
-# ============================================================================================
+# fonction : reconnaitre_mot
+# role : teste si un mot est reconnu par l'automate deterministe complet. on part de l'etat
+#        initial et on suit les transitions symbole par symbole. si on arrive sur un etat
+#        final a la fin du mot, le mot est reconnu.
+# parametres :
+#   - automate : l'objet Automate deterministe complet
+#   - mot : chaine de caracteres a tester (ex: "aab")
+# retour : True si le mot est reconnu, False sinon
 def reconnaitre_mot(automate, mot):
     if not automate.alphabet:
         automate.get_alphabet()
 
     nombre_etats = len(automate.etats)
 
-    # indice_etat_courant : index de l'état courant, on part de l'état initial
+    # etat courant, on part de l'etat init
     indice_etat_courant = automate.etats.index(automate.initial[0])
 
-    # Cas spécial : le mot vide (epsilon)
+    # cas special : mot vide (epsilon)
     if mot == '' or mot == 'eps':
         return automate.etats[indice_etat_courant] in automate.final
 
-    # On parcourt le mot symbole par symbole
+    # parcours du mot symbole par symbole
     for symbole in mot:
-        # On vérifie que le symbole fait partie de l'alphabet
+        # verif que le symbole est dans l'alphabet
         if symbole not in automate.alphabet:
             print(f"  Le symbole '{symbole}' n'appartient pas a l'alphabet {automate.alphabet}.")
             return False
 
-        # On cherche la transition depuis l'état courant avec ce symbole
+        # on cherche la transition depuis l'etat courant avec ce symbole
         transition_trouvee = False
-        # Boucle indice_arrivee : on cherche l'état d'arrivée
+        # on cherche l'etat d'arrivee
         for indice_arrivee in range(nombre_etats):
             if symbole in automate.transitions[indice_etat_courant][indice_arrivee]:
-                indice_etat_courant = indice_arrivee  # On avance vers l'état d'arrivée
+                indice_etat_courant = indice_arrivee  # on avance
                 transition_trouvee = True
                 break
 
-        # Si aucune transition trouvée (ne devrait pas arriver si l'automate est complet)
+        # si rien trouve (devrait pas arriver si automate complet)
         if not transition_trouvee:
             return False
 
-    # Après avoir lu tout le mot, on vérifie si l'état courant est un état final
+    # apres lecture du mot, on check si l'etat courant est final
     return automate.etats[indice_etat_courant] in automate.final
 
 
-# ============================================================================================
-# Fonction : complementaire
-# Role : Construit l'automate reconnaissant le langage complémentaire. On inverse simplement
-#        les états finaux et non-finaux : les anciens finaux deviennent non-finaux et
-#        vice-versa. L'automate doit être déterministe et complet.
-# Parametres :
-#   - automate : l'objet Automate déterministe complet
-# Retour : Un nouvel objet Automate reconnaissant le langage complémentaire
-# ============================================================================================
+# fonction : complementaire
+# role : construit l'automate reconnaissant le langage complementaire. on inverse simplement
+#        les etats finaux et non-finaux : les anciens finaux deviennent non-finaux et
+#        vice-versa. l'automate doit etre deterministe et complet.
+# parametres :
+#   - automate : l'objet Automate deterministe complet
+# retour : un nouvel objet Automate reconnaissant le langage complementaire
 def complementaire(automate):
-    # On crée une copie profonde pour ne pas modifier l'original
+    # copie profonde pour pas toucher l'original
     nouveau = copy.deepcopy(automate)
 
-    # nouveaux_finaux : tous les états qui N'ETAIENT PAS finaux dans l'automate original
+    # nouveaux finaux = tous les etats qui etaient PAS finaux avant
     nouveaux_finaux = [etat for etat in nouveau.etats if etat not in nouveau.final]
 
-    # On remplace les anciens états finaux par les nouveaux
+    # on remplace
     nouveau.final = nouveaux_finaux
 
     return nouveau

@@ -2,13 +2,13 @@ import os
 from automate import Automate
 
 
-# fonction qui lit un automate depuis un fichier texte
+# lit un automate depuis un fichier txt
 def lire_automate(fichier):
     automate = Automate()
 
     f = open(fichier, 'r')
 
-    # lecture de la ligne des etats
+    # lecture ligne des etats
     ligne_etats = f.readline()
     partie_etats = ligne_etats.split(':')
     liste_etats = partie_etats[-1].strip().split(',')
@@ -18,7 +18,7 @@ def lire_automate(fichier):
         if e != '':
             automate.etats.append(e)
 
-    # lecture de la ligne des etats initiaux
+    # lecture etats initiaux
     ligne_initiaux = f.readline()
     partie_initiaux = ligne_initiaux.split(':')
     liste_initiaux = partie_initiaux[-1].strip().split(',')
@@ -28,7 +28,7 @@ def lire_automate(fichier):
         if e != '':
             automate.initial.append(e)
 
-    # lecture de la ligne des etats finaux
+    # lecture etats finaux
     ligne_finaux = f.readline()
     partie_finaux = ligne_finaux.split(':')
     liste_finaux = partie_finaux[-1].strip().split(',')
@@ -38,10 +38,10 @@ def lire_automate(fichier):
         if e != '':
             automate.final.append(e)
 
-    # on saute la ligne "transitions:"
+    # on skip la ligne "transitions:"
     f.readline()
 
-    # construction de la matrice de transitions (NxN de listes vides)
+    # construction matrice transitions (NxN listes vides)
     nb_etats = len(automate.etats)
     automate.transitions = []
     for i in range(nb_etats):
@@ -50,18 +50,18 @@ def lire_automate(fichier):
             ligne.append([])
         automate.transitions.append(ligne)
 
-    # dictionnaire pour retrouver l'index d'un etat par son nom
+    # dico pour retrouver l'index d'un etat par son nom
     index_etats = {}
     for idx in range(len(automate.etats)):
         index_etats[automate.etats[idx]] = idx
 
-    # lecture des transitions ligne par ligne
+    # lecture transitions ligne par ligne
     for x in f:
         ligne = x.strip()
         if ligne == '':
             continue
 
-        # on essaie de couper par virgule
+        # on coupe par virgule
         test = ligne.split(',')
 
         if len(test) == 3:
@@ -80,7 +80,7 @@ def lire_automate(fichier):
                 print("  Attention : ligne ignoree (format invalide) : '" + ligne + "'")
                 continue
         else:
-            # on essaie de couper par espaces
+            # on coupe par espaces
             parties = ligne.split()
             if len(parties) == 3:
                 nom_depart = parties[0].strip()
@@ -90,7 +90,7 @@ def lire_automate(fichier):
                 print("  Attention : ligne ignoree (format invalide) : '" + ligne + "'")
                 continue
 
-        # on ajoute la transition dans la matrice
+        # ajout transition dans la matrice
         if nom_depart in index_etats and nom_arrivee in index_etats:
             i = index_etats[nom_depart]
             j = index_etats[nom_arrivee]
@@ -100,39 +100,39 @@ def lire_automate(fichier):
 
     f.close()
 
-    # on calcule l'alphabet
+    # calcul alphabet
     automate.get_alphabet()
 
     return automate
 
 
-# fonction qui affiche la table de transitions de l'automate
+# affiche la table de transitions
 def afficher_automate(automate):
-    # on recupere l'alphabet
+    # recup alphabet
     if len(automate.alphabet) == 0:
         automate.get_alphabet()
 
     nb_etats = len(automate.etats)
     alphabet = automate.alphabet
 
-    # on construit le contenu de chaque cellule
+    # contenu de chaque cellule
     tableau_contenu = []
     for i in range(nb_etats):
         ligne = {}
         for symbole in alphabet:
-            # on cherche toutes les destinations depuis l'etat i avec ce symbole
+            # cherche toutes les destinations depuis i avec ce symbole
             destinations = []
             for j in range(nb_etats):
                 if symbole in automate.transitions[i][j]:
                     destinations.append(automate.etats[j])
-            # si pas de destination, on met '--'
+            # pas de dest => '--'
             if len(destinations) == 0:
                 ligne[symbole] = '--'
             else:
                 ligne[symbole] = ','.join(destinations)
         tableau_contenu.append(ligne)
 
-    # calcul des largeurs de colonnes
+    # calcul largeurs colonnes
     largeur_etat = 4
     for i in range(nb_etats):
         marqueur = ''
@@ -154,19 +154,19 @@ def afficher_automate(automate):
             if len(tableau_contenu[i][symbole]) > largeur_col[symbole]:
                 largeur_col[symbole] = len(tableau_contenu[i][symbole])
 
-    # affichage de l'en-tete
+    # affichage en-tete
     entete = ' ' * largeur_etat + '|'
     for symbole in alphabet:
         entete = entete + ' ' + symbole.center(largeur_col[symbole]) + ' |'
     print(entete)
 
-    # ligne de separation
+    # separateur
     separateur = '-' * largeur_etat + '+'
     for symbole in alphabet:
         separateur = separateur + '-' * (largeur_col[symbole] + 2) + '+'
     print(separateur)
 
-    # affichage de chaque ligne
+    # chaque ligne
     for i in range(nb_etats):
         marqueur = ''
         if automate.etats[i] in automate.initial:
@@ -187,9 +187,9 @@ def afficher_automate(automate):
     print()
 
 
-# fonction qui sauvegarde un automate dans un fichier texte
+# sauvegarde un automate dans un fichier txt
 def sauvegarder_automate(automate, num_automate, dossier='Automates_Test'):
-    # on cherche le prochain numero de version disponible
+    # cherche le prochain num de version dispo
     version = 1
     while True:
         nom_fichier = "F" + str(num_automate) + "Version" + str(version) + ".txt"
@@ -198,7 +198,7 @@ def sauvegarder_automate(automate, num_automate, dossier='Automates_Test'):
             break
         version = version + 1
 
-    # ecriture du fichier
+    # ecriture fichier
     f = open(chemin, 'w')
     f.write("etats: " + ', '.join(automate.etats) + "\n")
     f.write("initial: " + ', '.join(automate.initial) + "\n")
