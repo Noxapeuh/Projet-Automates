@@ -1,0 +1,19 @@
+etats: i, 0, 1, 2, 3
+initial: i
+finaux: 1, i
+transitions:
+0, a, 1
+0, b, 3
+0, c, 4
+1, b, 2
+1, a, 4
+1, c, 4
+2, a, 1
+2, b, 3
+2, c, 4
+3, a, 2
+3, b, 4
+3, c, 4
+4, a, 4
+4, b, 4
+4, c, 4

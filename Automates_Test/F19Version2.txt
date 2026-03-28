@@ -1,0 +1,6 @@
+etats: 0, 1
+initial: 1
+finaux: 0
+transitions:
+0, a, 0
+1, a, 1

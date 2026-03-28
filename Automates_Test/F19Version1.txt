@@ -1,0 +1,7 @@
+etats: 0, 1, P
+initial: 1
+finaux: 0
+transitions:
+0, a, 0
+1, a, 2
+2, a, 2
